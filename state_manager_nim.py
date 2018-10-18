@@ -11,9 +11,12 @@ class state_manager_nim:
 
     def get_child_state_keys(self, state_key):
         # must return a list of unique keys for all legal child states
-        keys = [state_key[1]-i for i in range(1, min(self.max_stone_pick+1, state_key[1]+1))]
+        # returns state and moves made to get to the state
+        r = range(1, min(self.max_stone_pick+1, state_key[1]+1))
+        keys = [state_key[1]-i for i in r]
+        moves = [i for i in r]
         player = 1 if state_key[0] == 2 else 2
-        return [(player, key) for key in keys]
+        return [(player, key) for key in keys], moves
 
     def winner(self, state_key):
         # return winner (0 (no winner), 1 or 2)

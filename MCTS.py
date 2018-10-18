@@ -1,22 +1,59 @@
 import math
 import random
-import state_manager_nim
 
 
-debug = True
-M = 1000  # Number of simulation per move in actual game
+debug = False
+
+
 C = math.sqrt(2)  # exploration term
-start_player = 1  # starting player
 
-state_manager = state_manager_nim.state_manager_nim(10, 3, start_player)
+
+class MonteCarlo:
+    def __init__(self, start_player, state_manager):
+        self.state_manager = state_manager
+        self.root = Node(None, state_manager.get_start(), None, start_player, state_manager)
+
+    def search(self, simulations):
+        # simulations is number of games to simulate
+        for i in range(simulations):
+            expanded_node = self.root.select_and_expand()
+            winner = expanded_node.simulate()
+            expanded_node.backpropagate(winner)
+
+    def best_move(self):
+        best_kid = None
+        visited = 0
+        if self.root.child_nodes == []:
+            print("Error in best_move, root node is end state")
+        for kid in self.root.child_nodes:
+            if kid.tot_sims > visited:
+                visited = kid.tot_sims
+                best_kid = kid
+        return best_kid.state_key, best_kid.move_to_state
+
+    def purge_tree(self, state_key):
+        # set kid with state_key to new root, and purge all nodes not it's children
+        old_root = self.root
+        self.root = self.root.child_nodes[self.root.child_states.index(state_key)]
+        for kid in old_root.child_nodes:
+            if kid.state_key != self.root.state_key:
+                kid.purge()
+        if debug:
+            print("old_root:", old_root.state_key)
+            print("new root:", self.root.state_key)
+        del(old_root)
 
 
 class Node:
-    def __init__(self, parent, state_key, player_turn):
+    def __init__(self, parent, state_key, move_to_state, player_turn, state_manager):
+        self.state_manager = state_manager
         self.parent = parent
-        # map of state_keys to child_nodes
-        self.children = {}
+        # list of child nodes
+        self.child_nodes = []
+        # list of child node states
+        self.child_states = []
         self.state_key = state_key
+        self.move_to_state = move_to_state
         self.player_turn = player_turn
         self.tot_sims = 0
         self.win_sims = 0
@@ -27,18 +64,20 @@ class Node:
 
     def select_and_expand(self):
         # returns the expanded node
-        legal_states = state_manager.get_child_state_keys(self.state_key)
+        legal_states, legal_moves = self.state_manager.get_child_state_keys(self.state_key)
         if len(legal_states) == 0:
             if debug:
-                print("reached leaf node in selection fase in Node.select_and_expand()")
+                print("Reached leaf node in selection fase in Node.select_and_expand()")
             return self
-        opt_keys = [s for s in legal_states if s not in self.children.keys()]
+        opt_keys = [s for s in legal_states if s not in self.child_states]
         if opt_keys != []:
             # expand node with new kid
             random_kid_state = random.choice(opt_keys)
+            move = legal_moves[legal_states.index(random_kid_state)]
             next_player = 1 if self.player_turn == 2 else 2
-            node = Node(self, random_kid_state, next_player)
-            self.children[random_kid_state] = node
+            node = Node(self, random_kid_state, move, next_player, self.state_manager)
+            self.child_nodes.append(node)
+            self.child_states.append(random_kid_state)
             if debug:
                 print("node expanded:", node.state_key)
             return node
@@ -46,7 +85,7 @@ class Node:
             # select kid with highest UCT
             best_kid = None
             best_kid_uct = float("-inf")
-            for kid in self.children.values():
+            for kid in self.child_nodes:
                 kid_uct = kid.uct()
                 if kid_uct > best_kid_uct:
                     best_kid = kid
@@ -61,12 +100,12 @@ class Node:
         # simulates a game played from self
         current_state_key = self.state_key
         while True:
-            winner = state_manager.winner(current_state_key)
+            winner = self.state_manager.winner(current_state_key)
             if winner != 0:
                 if debug:
                     print("found winner in simulation:", current_state_key, winner)
                 return winner
-            current_state_key = random.choice(state_manager.get_child_state_keys(current_state_key))
+            current_state_key = random.choice(self.state_manager.get_child_state_keys(current_state_key)[0])
             if debug:
                 print("random simulation:", current_state_key)
 
@@ -80,22 +119,9 @@ class Node:
         if self.parent is not None:
             self.parent.backpropagate(winner)
 
-
-class MonteCarlo:
-    def __init__(self):
-        self.root = Node(None, state_manager.get_start(), start_player)
-
-    def play(self):
-        for i in range(M):
-            expanded_node = self.root.select_and_expand()
-            winner = expanded_node.simulate()
-            expanded_node.backpropagate(winner)
-
-    def best_move(self):
-        best_kid = None
-        visited = 0
-        for key in self.root.children:
-            if self.root.children[key].tot_sims > visited:
-                visited = self.root.children[key].tot_sims
-                best_kid = self.root.children[key]
-        return best_kid.state_key
+    def purge(self):
+        # purge self and all children
+        if self.child_nodes != []:
+            for kid in self.child_nodes:
+                kid.purge()
+        del(self)
