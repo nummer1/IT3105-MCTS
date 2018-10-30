@@ -4,11 +4,11 @@ import random
 
 
 verbose = False
-G = 3  # Number of episodes to batch run
+G = 50  # Number of episodes to batch run
 P = 1  # Starting player, if 0: random
-M = 100  # Number of simulations per move in actual game
-N = 99  # Number of starting stones
-K = 6  # Max number of stones a player can pick
+M = 1000  # Number of simulations per move in actual game
+N = 10  # Number of starting stones
+K = 3  # Max number of stones a player can pick
 
 
 win_game_count_p1 = 0

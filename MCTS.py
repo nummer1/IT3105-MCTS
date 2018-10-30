@@ -23,7 +23,7 @@ class MonteCarlo:
     def best_move(self):
         best_kid = None
         visited = 0
-        if self.root.child_nodes == []:
+        if not self.root.child_nodes:
             print("Error in best_move, root node is end state")
         for kid in self.root.child_nodes:
             if kid.tot_sims > visited:
@@ -41,7 +41,7 @@ class MonteCarlo:
         if debug:
             print("old_root:", old_root.state_key)
             print("new root:", self.root.state_key)
-        del(old_root)
+        del old_root
 
 
 class Node:
@@ -70,7 +70,7 @@ class Node:
                 print("Reached leaf node in selection fase in Node.select_and_expand()")
             return self
         opt_keys = [s for s in legal_states if s not in self.child_states]
-        if opt_keys != []:
+        if opt_keys:
             # expand node with new kid
             random_kid_state = random.choice(opt_keys)
             move = legal_moves[legal_states.index(random_kid_state)]
@@ -111,7 +111,7 @@ class Node:
 
     def backpropagate(self, winner):
         # update all stats and parent stats based on winner
-        # winner whould be 1 or 2
+        # winner would be 1 or 2
         self.tot_sims += 1
         if winner != self.player_turn:
             # increment wins if current player is losing, because stats is used by parents
@@ -121,7 +121,7 @@ class Node:
 
     def purge(self):
         # purge self and all children
-        if self.child_nodes != []:
+        if self.child_nodes:
             for kid in self.child_nodes:
                 kid.purge()
-        del(self)
+        del self
