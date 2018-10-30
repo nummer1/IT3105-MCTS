@@ -3,30 +3,12 @@ import MCTS
 import random
 
 
-"""
-State Manager documentation
-__init__()
-@params whatever parameters it needs
-
-get_start()
-@return position: starting position
-
-get_child_state_keys()
-@param state_key: key of a state
-@return states, moves: reachable states and corresponding moves from state_key
-
-winner()
-@param state_key: key of state
-@return int: 0 if no winner, 1 or 2 if state is a win for corresponding player
-"""
-
-
 verbose = False
-G = 50  # Number of episodes to batch run
+G = 3  # Number of episodes to batch run
 P = 1  # Starting player, if 0: random
-M = 10000  # Number of simulations per move in actual game
-N = 15  # Number of starting stones
-K = 3  # Max number of stones a player can pick
+M = 100  # Number of simulations per move in actual game
+N = 99  # Number of starting stones
+K = 6  # Max number of stones a player can pick
 
 
 win_game_count_p1 = 0
