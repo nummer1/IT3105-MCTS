@@ -10,7 +10,7 @@ def run():
 verbose = False
 G = 10  # Number of episodes to batch run
 P = 1  # Starting player, if 0: random
-M = 10  # Number of simulations per move in actual game
+M = 100  # Number of simulations per move in actual game
 S = 5  # Board size
 
 

@@ -1,4 +1,4 @@
-import state_manager_nim
+from old import state_manager_nim
 import MCTS
 import random
 
