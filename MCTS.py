@@ -57,12 +57,16 @@ class Node:
         self.player_turn = player_turn
         self.tot_sims = 0
         self.win_sims = 0
+        self.is_winning = state_manager.winner(state_key)  # 1 if win for 1, 2 if win for 2
 
     def uct(self):
         # return UCT of node
         return (self.win_sims / self.tot_sims) + (C * math.sqrt(math.log(self.parent.tot_sims) / self.tot_sims))
 
     def select_and_expand(self):
+        # if this node is a win for either player, don't simulate
+        if self.is_winning != 0:
+            return self
         # returns the expanded node
         legal_states, legal_moves = self.state_manager.get_child_state_keys(self.state_key)
         if len(legal_states) == 0:

@@ -9,6 +9,26 @@ class state_manager_hex:
         if self.start_player != 1:
             print("WARNING: start_player is not 1")
 
+    def print_board(self, state_key):
+        print("player_turn:", state_key[0])
+        modcol = self.size - 1
+        size = 2 * self.size - 1
+        diamond_grid = [['*' for i in range(size)] for j in range(size)]
+        for i, cell in enumerate(state_key[1]):
+            c_column = i % self.size
+            c_row = i // self.size
+            newrow = c_row + c_column
+            newcol = modcol + c_column - c_row
+            if cell[0] == 1:
+                value = 1
+            elif cell[1] == 1:
+                value = 2
+            else:
+                value = 0
+            diamond_grid[newrow][newcol] = str(value)
+        for row in diamond_grid:
+            print(' '.join(row))
+
     def get_start(self):
         # return start state
         # board = Board(self.size, self.start_player)
@@ -56,25 +76,20 @@ class state_manager_hex:
         neighbours = [n[0]*self.size + n[1] for i, n in enumerate(neighbours) if i not in remove_elements]
         return neighbours
 
-    def winner1(self, state_key):
-        for cell in state_key[1]:
-            if cell == (0, 0):
-                return 0
-        return 1
-
     def winner(self, state_key):
         # return winner (0 (no winner), 1 or 2)
         # need only to check if player won
-        # player 1 should connect from left to right (row)
-        # player 2 should connect from top to bottom (column)
+        # player 1 should span all rows (top-bottom)
+        # player 2 should span all columns (left-right)
         # check if previous player won. subtract 1 from player to use as index
         player = (1 if state_key[0] == 2 else 2) - 1
         board = state_key[1]
         # iterates left to right and top to bottom
         if player == 0:
-            to_visit = [i for i in range(0, self.size**2, self.size) if board[i][player] == 1]
-        else:
             to_visit = [i for i in range(self.size) if board[i][player] == 1]
+        else:
+            to_visit = [i for i in range(0, self.size**2, self.size) if board[i][player] == 1]
+        # print("to_visit:", to_visit)
         to_visit = set(to_visit)
 
         prev_visit = set()
@@ -83,17 +98,32 @@ class state_manager_hex:
                 break
             else:
                 cell_indx = to_visit.pop()
-                neighbours = [n for n in self.neighbours(cell_indx) if board[cell_indx][player] == 1 and n not in prev_visit]
+                neighbours = [n for n in self.neighbours(cell_indx) if board[n][player] == 1 and n not in prev_visit]
                 to_visit.update(neighbours)
                 prev_visit.add(cell_indx)
 
         # check if right or bottom cells is in list depending on player
         if player == 0:
-            goal = [i for i in range(self.size-1, self.size**2, self.size)]
-        else:
             goal = [i for i in range(self.size*(self.size-1), self.size**2)]
+        else:
+            goal = [i for i in range(self.size-1, self.size**2, self.size)]
+        # print("goal:", goal)
+        # print("prev_visit", prev_visit)
         for g in goal:
             if g in prev_visit:
                 return player + 1
         # if no return, no winner
         return 0
+
+
+if __name__ == '__main__':
+    s_m = state_manager_hex(3, 1)
+    states = [(2, [(0, 0), (0, 0), (0, 1), (0, 0), (1, 0), (1, 0), (0, 1), (0, 0), (1, 0)]),
+                (1, [(0, 0), (0, 1), (0, 1), (0, 0), (1, 0), (1, 0), (0, 1), (0, 0), (1, 0)]),
+                (2, [(1, 0), (0, 1), (0, 1), (0, 0), (1, 0), (1, 0), (0, 1), (0, 0), (1, 0)]),
+                (1, [(1, 0), (0, 1), (0, 1), (0, 1), (1, 0), (1, 0), (0, 1), (0, 0), (1, 0)]),
+                (2, [(1, 0), (0, 1), (1, 0), (1, 0), (1, 0), (0, 1), (0, 1), (0, 1), (1, 0)])]
+    for state in states:
+        print(state)
+        print(s_m.print_board(state))
+        print("winner:", s_m.winner(state))

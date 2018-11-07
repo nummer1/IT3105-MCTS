@@ -1,4 +1,4 @@
-from old import state_manager_nim
+import state_manager_nim
 import MCTS
 import random
 
@@ -6,9 +6,9 @@ import random
 verbose = False
 G = 50  # Number of episodes to batch run
 P = 1  # Starting player, if 0: random
-M = 1000  # Number of simulations per move in actual game
-N = 10  # Number of starting stones
-K = 3  # Max number of stones a player can pick
+M = 10000  # Number of simulations per move in actual game
+N = 25  # Number of starting stones
+K = 15  # Max number of stones a player can pick
 
 
 win_game_count_p1 = 0
