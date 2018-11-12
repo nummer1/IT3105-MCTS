@@ -31,6 +31,15 @@ class MonteCarlo:
                 best_kid = kid
         return best_kid.state_key, best_kid.move_to_state
 
+    def get_move_distribution(self):
+        # returns distribution from the last simulation
+        dist = [0 for i in range(self.state_manager.get_move_size())]
+        for kid in self.root.child_nodes:
+            # TODO: if kid.move_to_state is not an integer, need function in state_manager
+            dist[kid.move_to_state] = kid.tot_sims
+        dist = [d/sum(dist) for d in dist]
+        return dist
+
     def purge_tree(self, state_key):
         # set kid with state_key to new root, and purge all nodes not it's children
         old_root = self.root

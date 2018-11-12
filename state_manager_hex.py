@@ -56,6 +56,10 @@ class state_manager_hex:
                 legal_moves.append(i)
         return legal_states, legal_moves
 
+    def get_move_size(self):
+        # returns the length of possible moves
+        return self.size**2
+
     def neighbours(self, cell_indx):
         c = cell_indx % self.size
         r = cell_indx // self.size
