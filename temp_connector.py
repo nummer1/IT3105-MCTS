@@ -21,7 +21,7 @@ for i in range(games):
     board = s_m.get_start()
     MC = MCTS.MonteCarlo(start_player, s_m)
     while True:
-        # TODO: use anet to do rollout (simulation) in MCTS
+        # TODO: use ANN to do rollout (simulation) in MCTS
         # Do M rollouts
         MC.search(M)
         distribution = MC.get_move_distribution()
@@ -32,7 +32,7 @@ for i in range(games):
         # set new root
         MC.purge_tree(board)
 
-        if winner != 0 and verbose:
+        if winner != 0:
             print("winner is:", winner)
             break
 

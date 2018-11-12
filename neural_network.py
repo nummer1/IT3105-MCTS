@@ -11,7 +11,7 @@ class HexPlayer:
         self.node_number = board_size**2
         self.model = None
         self.epochs = 10
-        self.bs = 4
+        self.bs = 32
         self.create_network()
 
     def create_network(self):
@@ -26,19 +26,19 @@ class HexPlayer:
         self.model.summary()
 
     def train_network(self, input, target):
-        # TODO: do training, take more parameters
-        return None
-        # self.model.fit(input, target, epochs=self.epochs, batch_size=self.bs)
+        # TODO: take more parameters
+        # TODO: check what shuffle actually does
+        self.model.fit([input], [target], epochs=self.epochs, batch_size=self.bs, validation_split=0, shuffle=True)
 
     def save_weights(self, number):
-        filepath = PATH + "weights/" + number + ".hdf5"
+        filepath = PATH + "weights/" + number
         self.model.save_weights(filepath)
 
     def load_weights(self, number):
-        filepath = PATH + "weights/" + number + ".hdf5"
+        filepath = PATH + "weights/" + number
         self.model.load_weights(filepath)
 
-    # def get_distribution(self, input, target, player):
-    #     prediction = self.model.predict([input, target])
-    #     print("prediction from get_distribution:", prediction)
-    #     return prediction
+    def prediction(self, input):
+        # TODO: change batchsize?
+        prediction = self.predict(input, batch_size=1)
+        return prediction
