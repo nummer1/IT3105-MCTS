@@ -9,15 +9,16 @@ C = math.sqrt(2)  # exploration term
 
 
 class MonteCarlo:
-    def __init__(self, start_player, state_manager):
+    def __init__(self, start_player, state_manager, actor):
         self.state_manager = state_manager
+        self.actor = actor
         self.root = Node(None, state_manager.get_start(), None, start_player, state_manager)
 
     def search(self, simulations):
         # simulations is number of games to simulate
         for i in range(simulations):
             expanded_node = self.root.select_and_expand()
-            winner = expanded_node.simulate()
+            winner = expanded_node.simulate(self.actor)
             expanded_node.backpropagate(winner)
 
     def best_move(self):
@@ -109,7 +110,7 @@ class Node:
                 print("node selected:", best_kid.state_key)
             return best_kid.select_and_expand()
 
-    def simulate(self):
+    def simulate(self, actor):
         # simulates a game played from self
         current_state_key = self.state_key
         while True:
@@ -120,6 +121,7 @@ class Node:
                 return winner
             # TODO: use neural net instead of choice
             current_state_key = random.choice(self.state_manager.get_child_state_keys(current_state_key)[0])
+            # current_state_key = actor.prediction(current_state_key)[0]
             if debug:
                 print("random simulation:", current_state_key)
 

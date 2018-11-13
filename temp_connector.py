@@ -7,19 +7,19 @@ from collections import deque
 verbose = False
 M = 200  # number of rollouts
 S = 5  # size of board
-games = 10
+games = 1
 buffer_size = 1000
 start_player = 1  # this should be 1 to work properly
 save_interval = 1
 
 
 s_m = state_manager_hex.state_manager_hex(S, start_player)
-actor = neural_network.HexPlayer(S)
+actor = neural_network.HexPlayer(s_m)
 replay_buffer = deque(maxlen=buffer_size)
 
 for i in range(games):
     board = s_m.get_start()
-    MC = MCTS.MonteCarlo(start_player, s_m)
+    MC = MCTS.MonteCarlo(start_player, s_m, actor)
     while True:
         # TODO: use ANN to do rollout (simulation) in MCTS
         # Do M rollouts
@@ -37,15 +37,10 @@ for i in range(games):
             break
 
     # train network
-    input = []
-    target = []
-    for c in replay_buffer:
-        case = []
-        for c_i in c[0][1]:
-            case.extend(c_i)
-        input.append(case)
-        target.append(c[1])
-    actor.train_network(input, target)
+    actor.train_network(replay_buffer)
 
     if i % save_interval == 0:
-        actor.save_weights(str(i//save_interval))
+        actor.save_weights(str(i/save_interval))
+
+p = actor.prediction((1, [(0, 0) for i in range(25)]))
+print(p)
