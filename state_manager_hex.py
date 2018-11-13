@@ -41,7 +41,7 @@ class state_manager_hex:
             print("WARNING: illegal move in state_manager_hex.add_move_to_state")
         state_key[1][move] = (1, 0) if state_key[0] == 1 else (0, 1)
         state_key[0] == 1 if state_key[0] == 2 else 2
-        # return state_key
+        return state_key
 
     def get_child_state_keys(self, state_key):
         # must return a list of unique keys for all legal child states

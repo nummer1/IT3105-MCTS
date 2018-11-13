@@ -73,5 +73,7 @@ class HexPlayer:
         # TODO: fix prediction
         print(prediction)
         move = prediction.index(max(prediction))
-        self.state_manager.add_move_to_state(state_key, move)
+        print("state_key before", state_key)
+        state_key = self.state_manager.add_move_to_state(state_key, move)
+        print("state_key after", state_key)
         return state_key, move
