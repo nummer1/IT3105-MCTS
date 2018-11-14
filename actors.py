@@ -1,17 +1,27 @@
+import random
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
-import numpy as np
 
 
 PATH = "/home/kasparov/Documents/IT3105-MCTS/"
 
 
-class HexPlayer:
+class Random:
+    def __init__(self, state_manager):
+        self.state_manager = state_manager
+
+    def get_state(self, state_key):
+        move = random.choice(self.state_manager.get_legal_moves(state_key))
+        state = self.state_manager.apply_move_to_state(state_key, move)
+        return state, move
+
+
+class NeuralNet:
     def __init__(self, state_manager):
         self.state_manager = state_manager
         self.node_number = state_manager.size**2
         self.model = None
-        self.bs = 32
+        self.bs = 128
         self.create_network()
 
     def create_network(self):
@@ -57,14 +67,15 @@ class HexPlayer:
             target.append(replay[1])
         return input, target
 
-    def get_best_state(self, state_key):
+    def get_state(self, state_key):
         # returns best state and best move
         # TODO: change batchsize?
-        # TODO: add randomness
+        # TODO: add randomnes
         input = [[self.state_to_ann(state_key)]]
         # prediction is a numpy array
         prediction = self.model.predict(input, batch_size=1)[0]
-        legal_states, legal_moves = self.state_manager.get_child_state_keys(state_key)
+        # legal_states, legal_moves = self.state_manager.get_child_state_keys(state_key)
+        legal_moves = self.state_manager.get_legal_moves(state_key)
         for i, cell in enumerate(prediction):
             if i not in legal_moves:
                 prediction[i] = 0
@@ -75,6 +86,6 @@ class HexPlayer:
         p_sum = sum(prediction)
         if p_sum == 0:
             print("Zero in neural_network")
-            return legal_states[0], legal_moves[0]
-        move = prediction.argmax()
-        return legal_states[legal_moves.index(move)], move
+        best_move = prediction.argmax()
+        best_state = self.state_manager.apply_move_to_state(state_key, best_move)
+        return best_state, best_move

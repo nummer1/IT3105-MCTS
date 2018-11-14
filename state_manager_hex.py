@@ -35,14 +35,21 @@ class state_manager_hex:
         board = [(0, 0) for i in range(self.size**2)]
         return (self.start_player, board)
 
-    # def add_move_to_state(self, state_key, move):
-    #     # returns state_key after move is made
-    #     if state_key[1][move] != (0, 0):
-    #         print("WARNING: illegal move in state_manager_hex.add_move_to_state")
-    #     board = copy.copy(state_key[1])
-    #     player = 1 if state_key[0] == 2 else 2
-    #     board[move] = (1, 0) if player == 1 else (0, 1)
-    #     return (player, board)
+    def apply_move_to_state(self, state_key, move):
+        # returns state_key after move is made
+        if state_key[1][move] != (0, 0):
+            print("WARNING: illegal move in state_manager_hex.add_move_to_state")
+        board = copy.copy(state_key[1])
+        board[move] = (1, 0) if state_key[0] == 1 else (0, 1)
+        player = 1 if state_key[0] == 2 else 2
+        return (player, board)
+
+    def get_legal_moves(self, state_key):
+        legal_moves = []
+        for i, cell in enumerate(state_key[1]):
+            if cell == (0, 0):
+                legal_moves.append(i)
+        return legal_moves
 
     def get_child_state_keys(self, state_key):
         # must return a list of unique keys for all legal child states
@@ -57,11 +64,7 @@ class state_manager_hex:
                 # if the hex is empty
                 # use copy. list is single dimension. tuples are copied correctly
                 b = copy.copy(board)
-                # b[i] = (1, 0) if cur_player == 1 else (0, 1)
-                if cur_player == 1:
-                    b[i] = (1, 0)
-                else:
-                    b[i] = (0, 1)
+                b[i] = (1, 0) if cur_player == 1 else (0, 1)
                 legal_states.append((next_player, b))
                 legal_moves.append(i)
         return legal_states, legal_moves

@@ -1,4 +1,4 @@
-import neural_network
+import actors
 import MCTS
 import state_manager_hex
 from collections import deque
@@ -14,14 +14,13 @@ save_interval = 1
 
 
 s_m = state_manager_hex.state_manager_hex(S, start_player)
-actor = neural_network.HexPlayer(s_m)
+actor = actors.NeuralNet(s_m)
 replay_buffer = deque(maxlen=buffer_size)
 
 for i in range(games):
     board = s_m.get_start()
     MC = MCTS.MonteCarlo(start_player, s_m, actor)
     while True:
-        # TODO: use ANN to do rollout (simulation) in MCTS
         # Do M rollouts
         MC.search(M)
         distribution = MC.get_move_distribution()
@@ -45,5 +44,5 @@ for i in range(games):
     if i % save_interval == 0:
         actor.save_weights(str(i/save_interval))
 
-p = actor.get_best_state((1, [(0, 0) for i in range(25)]))
+p = actor.get_state((1, [(0, 0) for i in range(25)]))
 print(p)
