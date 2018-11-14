@@ -120,8 +120,8 @@ class Node:
                     print("found winner in simulation:", current_state_key, winner)
                 return winner
             # TODO: use neural net instead of choice
-            current_state_key = random.choice(self.state_manager.get_child_state_keys(current_state_key)[0])
-            # current_state_key = actor.prediction(current_state_key)[0]
+            # current_state_key = random.choice(self.state_manager.get_child_state_keys(current_state_key)[0])
+            current_state_key = actor.get_best_state(current_state_key)[0]
             if debug:
                 print("random simulation:", current_state_key)
 

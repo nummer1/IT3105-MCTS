@@ -57,12 +57,14 @@ class HexPlayer:
             target.append(replay[1])
         return input, target
 
-    def prediction(self, state_key):
-        # return predicted state and predicted move
+    def get_best_state(self, state_key):
+        # returns best state and best move
         # TODO: change batchsize?
+        # TODO: add randomness
         input = [[self.state_to_ann(state_key)]]
+        # prediction is a numpy array
         prediction = self.model.predict(input, batch_size=1)[0]
-        legal_state, legal_moves = self.state_manager.get_child_state_keys(state_key)
+        legal_states, legal_moves = self.state_manager.get_child_state_keys(state_key)
         for i, cell in enumerate(prediction):
             if i not in legal_moves:
                 prediction[i] = 0
@@ -70,10 +72,9 @@ class HexPlayer:
         # if p_sum == 0:
         #     print("WARNING: HexPlayer.prediction, p_sum us 0")
         # prediction = [p/p_sum for p in prediction]
-        # TODO: fix prediction
-        print(prediction)
-        move = prediction.index(max(prediction))
-        print("state_key before", state_key)
-        state_key = self.state_manager.add_move_to_state(state_key, move)
-        print("state_key after", state_key)
-        return state_key, move
+        p_sum = sum(prediction)
+        if p_sum == 0:
+            print("Zero in neural_network")
+            return legal_states[0], legal_moves[0]
+        move = prediction.argmax()
+        return legal_states[legal_moves.index(move)], move

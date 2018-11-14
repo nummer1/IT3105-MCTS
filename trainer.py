@@ -37,10 +37,13 @@ for i in range(games):
             break
 
     # train network
+    print(len(replay_buffer))
+    for line in replay_buffer:
+        print(line)
     actor.train_network(replay_buffer)
 
     if i % save_interval == 0:
         actor.save_weights(str(i/save_interval))
 
-p = actor.prediction((1, [(0, 0) for i in range(25)]))
+p = actor.get_best_state((1, [(0, 0) for i in range(25)]))
 print(p)
