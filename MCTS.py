@@ -120,7 +120,7 @@ class Node:
                 if debug:
                     print("found winner in simulation:", current_state_key, winner)
                 return winner
-            current_state_key = actor.get_state(current_state_key)[0]
+            current_state_key = actor.get_state(current_state_key, False)[0]
             if debug:
                 print("random simulation:", current_state_key)
 

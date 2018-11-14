@@ -17,9 +17,11 @@ class Random:
 
 
 class NeuralNet:
-    def __init__(self, state_manager):
+    def __init__(self, state_manager, epsilon=0):
         self.state_manager = state_manager
         self.node_number = state_manager.size**2
+        # chose random action with epsilon probability
+        self.epsilon = epsilon
         self.model = None
         self.bs = 128
         self.create_network()
@@ -67,25 +69,31 @@ class NeuralNet:
             target.append(replay[1])
         return input, target
 
-    def get_state(self, state_key):
-        # returns best state and best move
-        # TODO: change batchsize?
-        # TODO: add randomnes
+    def get_state(self, state_key, best_move=True):
+        # returns state and move
+        # if best_move is True, return move with highest probability, else return based on probability
         input = [[self.state_to_ann(state_key)]]
         # prediction is a numpy array
         prediction = self.model.predict(input, batch_size=1)[0]
-        # legal_states, legal_moves = self.state_manager.get_child_state_keys(state_key)
         legal_moves = self.state_manager.get_legal_moves(state_key)
         for i, cell in enumerate(prediction):
             if i not in legal_moves:
                 prediction[i] = 0
-        # p_sum = sum(prediction)
-        # if p_sum == 0:
-        #     print("WARNING: HexPlayer.prediction, p_sum us 0")
-        # prediction = [p/p_sum for p in prediction]
+
         p_sum = sum(prediction)
         if p_sum == 0:
             print("Zero in neural_network")
-        best_move = prediction.argmax()
-        best_state = self.state_manager.apply_move_to_state(state_key, best_move)
-        return best_state, best_move
+
+        if self.epsilon > random.uniform(0, 1):
+            move = random.choice(self.state_manager.get_legal_moves(state_key))
+        else:
+            if best_move:
+                # argmax returns index of max argument
+                move = prediction.argmax()
+            else:
+                # chose move and state based on probabilities
+                prediction = [p/p_sum for p in prediction]
+                move = random.choices([i for i in range(self.state_manager.get_move_size())],
+                            weights=prediction, k=1)[0]
+        state = self.state_manager.apply_move_to_state(state_key, move)
+        return state, move

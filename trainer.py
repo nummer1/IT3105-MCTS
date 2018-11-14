@@ -7,7 +7,7 @@ from collections import deque
 verbose = False
 M = 200  # number of rollouts
 S = 5  # size of board
-games = 1
+games = 10
 buffer_size = 1000
 start_player = 1  # this should be 1 to work properly
 save_interval = 1
@@ -32,17 +32,10 @@ for i in range(games):
         MC.purge_tree(board)
 
         if winner != 0:
-            print("winner is:", winner)
             break
 
     # train network
-    print(len(replay_buffer))
-    for line in replay_buffer:
-        print(line)
     actor.train_network(replay_buffer)
 
     if i % save_interval == 0:
-        actor.save_weights(str(i/save_interval))
-
-p = actor.get_state((1, [(0, 0) for i in range(25)]))
-print(p)
+        actor.save_weights(str(i//save_interval))
