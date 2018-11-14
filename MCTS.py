@@ -1,5 +1,6 @@
 import math
 import random
+import time
 
 
 debug = False
@@ -14,12 +15,22 @@ class MonteCarlo:
         self.actor = actor
         self.root = Node(None, state_manager.get_start(), None, start_player, state_manager)
 
-    def search(self, simulations):
-        # simulations is number of games to simulate
-        for i in range(simulations):
+    def search(self, simulations=0, sim_time=0):
+        def sim():
             expanded_node = self.root.select_and_expand()
             winner = expanded_node.simulate(self.actor)
             expanded_node.backpropagate(winner)
+
+        # simulations is number of games to simulate
+        if simulations == 0 and time == 0:
+            print("ERROR: simulations and time is 0 in MonteCarlo.search")
+        if sim_time > 0:
+            t = time.time()
+            while t + sim_time > time.time():
+                sim()
+        else:
+            for i in range(simulations):
+                sim()
 
     def best_move(self):
         best_kid = None
