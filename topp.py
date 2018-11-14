@@ -26,7 +26,7 @@ def play_game(actor1, actor2):
 
 
 ann = actors.NeuralNet(s_m)
-ann.load_weights("9.0")
+ann.load_weights("16")
 random = actors.Random(s_m)
 winner_1 = 0
 winner_2 = 0

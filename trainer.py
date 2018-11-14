@@ -5,12 +5,13 @@ from collections import deque
 
 
 verbose = False
+# TODO: use time instead of absolute value
 M = 200  # number of rollouts
 S = 5  # size of board
-games = 10
+games = 200
 buffer_size = 1000
 start_player = 1  # this should be 1 to work properly
-save_interval = 1
+save_interval = 10
 
 
 s_m = state_manager_hex.state_manager_hex(S, start_player)
