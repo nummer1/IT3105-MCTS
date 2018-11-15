@@ -4,6 +4,8 @@ import state_manager_hex
 from collections import deque
 
 
+# TODO: show graphic games during training and TOPP
+
 # ANET TRAINING PARAMETERS
 net_size = [50]
 activation_function = ['sigmoid', 'tanh', 'relu'][2]
@@ -12,7 +14,7 @@ batch_size = 128  # batch size during training
 epsilon = 0.05  # probability of doing random move
 episodes = 200  # number episodes to generate
 # Imprtant: keras will delete older snapshots if snap_number is higher than 5
-snap_number = 20  # number of snapshots
+snap_number = 20  # number of snapshots, must be 2 or larger
 buffer_size = 1000  # size of replay buffer
 snapshots = [i for i in range(0, episodes+1, episodes//(snap_number-1))]
 

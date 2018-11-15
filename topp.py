@@ -3,6 +3,7 @@ import actors
 import state_manager_hex
 
 
+# TODO: don't have variables in two different files
 verbose = True
 games_in_series = 2
 size = 5

@@ -1,4 +1,5 @@
 from BasicClientActorAbs import BasicClientActorAbs
+import random
 import state_manager_hex
 import actors
 
@@ -9,7 +10,7 @@ class BasicClientActor(BasicClientActorAbs):
         BasicClientActorAbs.__init__(self, IP_address, verbose=verbose)
         self.s_m = state_manager_hex.state_manager_hex(5, 1)
         self.actor = actors.NeuralNet(self.s_m, epsilon=0)
-        self.actor.load("200")
+        self.actor.load("120")
 
     def handle_get_action(self, state):
         """
@@ -33,7 +34,10 @@ class BasicClientActor(BasicClientActorAbs):
             else:
                 mod_state.append((0, 0))
 
-        next_move = self.actor.get_state((player, mod_state), best_move=True)[1]
+        if self.starting_player != self.series_id and mod_state.count((0, 0)) > 21:
+            next_move = random.choice(self.s_m.get_child_state_keys((player, mod_state))[1])
+        else:
+            next_move = self.actor.get_state((player, mod_state), best_move=True)[1]
         r = next_move // self.s_m.size
         c = next_move % self.s_m.size
         return (r, c)

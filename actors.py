@@ -54,6 +54,7 @@ class NeuralNet:
         self.model = load_model(filepath)
 
     def state_to_ann(self, state):
+        # TODO: move to state_manager_hex
         # converts a state from state_manager to input for ANN
         case = []
         for cell in state[1]:
@@ -61,6 +62,7 @@ class NeuralNet:
         return case
 
     def replay_to_ann(self, replay_buffer):
+        # TODO: move to state_manager_hex
         # converts replay to input and target
         input = []
         target = []
@@ -70,6 +72,7 @@ class NeuralNet:
         return input, target
 
     def get_state(self, state_key, best_move):
+        # TODO: assignment says take best move, or random move with epsilon probabiltity
         # returns state and move
         # if best_move is True, return move with highest probability, else return based on probability
         input = [[self.state_to_ann(state_key)]]
@@ -86,7 +89,7 @@ class NeuralNet:
 
         # TODO: Random in beginning
         # state_key[1].count((0, 0)) > self.state_manager.size - 2
-        if self.epsilon > random.uniform(0, 1) or state_key[1].count((0, 0)) > self.state_manager.size - 4:
+        if self.epsilon > random.uniform(0, 1):
             move = random.choice(self.state_manager.get_legal_moves(state_key))
         else:
             if best_move:
