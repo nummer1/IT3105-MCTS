@@ -84,7 +84,9 @@ class NeuralNet:
         if p_sum == 0:
             print("Zero in neural_network")
 
-        if self.epsilon > random.uniform(0, 1):
+        # TODO: Random in beginning
+        # state_key[1].count((0, 0)) > self.state_manager.size - 2
+        if self.epsilon > random.uniform(0, 1) or state_key[1].count((0, 0)) > self.state_manager.size - 4:
             move = random.choice(self.state_manager.get_legal_moves(state_key))
         else:
             if best_move:

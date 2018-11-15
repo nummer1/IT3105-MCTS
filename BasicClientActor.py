@@ -8,7 +8,7 @@ class BasicClientActor(BasicClientActorAbs):
         self.series_id = -1
         BasicClientActorAbs.__init__(self, IP_address, verbose=verbose)
         self.s_m = state_manager_hex.state_manager_hex(5, 1)
-        self.actor = actors.NeuralNet(self.s_m)
+        self.actor = actors.NeuralNet(self.s_m, epsilon=0)
         self.actor.load("200")
 
     def handle_get_action(self, state):
@@ -21,25 +21,22 @@ class BasicClientActor(BasicClientActorAbs):
         then you will see a 2 here throughout the entire series, whereas player 1 will see a 1.
         :return: Your actor's selected action as a tuple (row, column)
         """
+        player = state[0]
         mod_state = []
         for cell in state[1:]:
-            if self.start_player == 2:
+            if self.starting_player == 2 and cell != 0:
                 cell = 1 if cell == 2 else 2
             if cell == 1:
                 mod_state.append((1, 0))
-            else:
+            elif cell == 2:
                 mod_state.append((0, 1))
-        next_move = self.actor.get_state(mod_state, best_move=True)[1]
+            else:
+                mod_state.append((0, 0))
 
-        #############################
-        #
-        #
-        # YOUR CODE HERE
-        #
-        # next_move = ???
-        ##############################
-
-        return next_move
+        next_move = self.actor.get_state((player, mod_state), best_move=True)[1]
+        r = next_move // self.s_m.size
+        c = next_move % self.s_m.size
+        return (r, c)
 
     def handle_series_start(self, unique_id, series_id, player_map, num_games, game_params):
         """

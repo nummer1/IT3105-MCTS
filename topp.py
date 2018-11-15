@@ -3,8 +3,8 @@ import actors
 import state_manager_hex
 
 
-verbose = False
-games_in_series = 1000
+verbose = True
+games_in_series = 2
 size = 5
 start_player = 1
 s_m = state_manager_hex.state_manager_hex(size, start_player)
@@ -62,8 +62,8 @@ ann_new.load("200")
 ann_new_epsilon = actors.NeuralNet(s_m, 0.1)
 ann_new_epsilon.load("200")
 random_1 = actors.Random(s_m)
-actors_name = ["old_ann", "ann_0", "ann_new", "ann_eps", "random"]
-actors_list = [ann_1, ann_0, ann_new, ann_new_epsilon, random_1]
-# actors_name = ["random", "new"]
-# actors_list = [random_1, ann_new]
+# actors_name = ["old_ann", "ann_0", "ann_new", "ann_eps", "random"]
+# actors_list = [ann_1, ann_0, ann_new, ann_new_epsilon, random_1]
+actors_name = ["old", "new"]
+actors_list = [ann_1, ann_new]
 round_robin(actors_list, actors_name)
