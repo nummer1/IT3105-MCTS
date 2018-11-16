@@ -32,17 +32,16 @@ class NeuralNet:
                 self.model.add(Dense(s, activation=afunc, input_shape=([node_number * 2])))
             else:
                 self.model.add(Dense(s, activation=afunc))
-        # TODO: softmax can be problematic if two good moves
+        # NOTE: softmax can be problematic if two good moves
         self.model.add(Dense(node_number, activation='softmax'))
         self.model.compile(optimizer=optimizer, loss='mean_squared_error')
         self.model.summary()
 
     def train_network(self, replay_buffer, batch_size=128, epochs=1):
-        # TODO: take more parameters
-        # TODO: Defaults to one epoch, should not train on all samples
         # epochs: how many times to run through all the input
         # batchs_size: how many cases to run through
-        input, target = self.replay_to_ann(replay_buffer)
+        replays = random.choices(replay_buffer, k=min([len(replay_buffer), batch_size]))
+        input, target = self.replay_to_ann(replays)
         self.model.fit([input], [target], batch_size=batch_size, epochs=epochs, validation_split=0.0, shuffle=True)
 
     def save(self, name):
@@ -72,7 +71,6 @@ class NeuralNet:
         return input, target
 
     def get_state(self, state_key, best_move):
-        # TODO: assignment says take best move, or random move with epsilon probabiltity
         # returns state and move
         # if best_move is True, return move with highest probability, else return based on probability
         input = [[self.state_to_ann(state_key)]]
@@ -87,7 +85,7 @@ class NeuralNet:
         if p_sum == 0:
             print("Zero in neural_network")
 
-        # TODO: Random in beginning
+        # NOTE: Random in beginning
         # state_key[1].count((0, 0)) > self.state_manager.size - 2
         if self.epsilon > random.uniform(0, 1):
             move = random.choice(self.state_manager.get_legal_moves(state_key))

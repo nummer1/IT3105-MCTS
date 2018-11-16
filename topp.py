@@ -2,9 +2,9 @@ import itertools
 
 
 class Topp():
-    def __init__(self, state_manager, games_in_seres, verbose):
+    def __init__(self, state_manager, games_in_series, verbose):
         self.state_manager = state_manager
-        self.games_in_seres = games_in_seres
+        self.games_in_series = games_in_series
         self.verbose = verbose
 
     def play_game(self, actor1, actor2):
@@ -16,7 +16,7 @@ class Topp():
             else:
                 state, move = actor2.get_state(state, True)
             if self.verbose:
-                print("move:", move)
+                self.state_manager.print_move(move)
                 self.state_manager.print_board(state)
                 print()
             winner = self.state_manager.winner(state)
@@ -29,6 +29,7 @@ class Topp():
         return winner
 
     def round_robin(self, actors_list, actors_name):
+        print("name_1, name_2: win_1, win_2")
         matches = itertools.combinations(actors_list, 2)
         for match in matches:
             winner_1 = 0

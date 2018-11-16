@@ -47,7 +47,7 @@ class MonteCarlo:
         # returns distribution from the last simulation
         dist = [0 for i in range(self.state_manager.get_move_size())]
         for kid in self.root.child_nodes:
-            # TODO: if kid.move_to_state is not an integer, need function in state_manager
+            # NOTE: if kid.move_to_state is not an integer, need function in state_manager
             dist[kid.move_to_state] = kid.tot_sims
         dist = [d/sum(dist) for d in dist]
         return dist

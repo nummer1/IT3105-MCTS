@@ -9,6 +9,11 @@ class state_manager_hex:
         if self.start_player != 1:
             print("WARNING: start_player is not 1")
 
+    def print_move(self, move):
+        move_row = move // self.size
+        move_column = move % self.size
+        print("move: (", move_row, ", ", move_column, ")", sep='')
+
     def print_board(self, state_key):
         print("player_turn:", state_key[0])
         modcol = self.size - 1
