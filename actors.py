@@ -29,11 +29,14 @@ class NeuralNet:
         self.model = Sequential()
         for i, s in enumerate(size):
             if i == 0:
-                self.model.add(Dense(s, activation=afunc, input_shape=([node_number * 2])))
+                self.model.add(Dense(s, activation=afunc, input_shape=([node_number * 4])))
             else:
                 self.model.add(Dense(s, activation=afunc))
         # NOTE: softmax can be problematic if two good moves
-        self.model.add(Dense(node_number, activation='softmax'))
+        if size == []:
+            self.model.add(Dense(node_number, activation='softmax', input_shape=([node_number * 4])))
+        else:
+            self.model.add(Dense(node_number, activation='softmax'))
         self.model.compile(optimizer=optimizer, loss='mean_squared_error')
         self.model.summary()
 
@@ -58,6 +61,11 @@ class NeuralNet:
         case = []
         for cell in state[1]:
             case.extend(cell)
+            if cell == (0, 0):
+                case.append(1)
+            else:
+                case.append(0)
+            case.append(state[0] - 1)
         return case
 
     def replay_to_ann(self, replay_buffer):
