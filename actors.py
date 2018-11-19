@@ -65,7 +65,7 @@ class NeuralNet:
                 case.append(1)
             else:
                 case.append(0)
-            case.append(state[0] - 1)
+            # case.append(state[0] - 1)
         return case
 
     def replay_to_ann(self, replay_buffer):
