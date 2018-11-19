@@ -4,8 +4,8 @@ from tensorflow.keras.layers import Dense
 from tensorflow.keras.models import load_model
 
 
-PATH = "/home/kasparov/Documents/IT3105-MCTS/"
-# PATH = "D:\\User\\Misc\\IT3105-MCTS\\"
+# PATH = "/home/kasparov/Documents/IT3105-MCTS/"
+PATH = "D:\\User\\Misc\\IT3105-MCTS\\"
 
 
 class Random:
