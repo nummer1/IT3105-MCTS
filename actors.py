@@ -40,7 +40,7 @@ class NeuralNet:
         self.model.compile(optimizer=optimizer, loss='mean_squared_error')
         self.model.summary()
 
-    def train_network(self, replay_buffer, batch_size=128, epochs=1):
+    def train_network_random_minibatch(self, replay_buffer, batch_size=128, epochs=1):
         # epochs: how many times to run through all the input
         # batchs_size: how many cases to run through
         replays = random.choices(replay_buffer, k=min([len(replay_buffer), batch_size]))

@@ -24,7 +24,7 @@ class Trainer:
             board = self.state_manager.get_start()
             MC = MCTS.MonteCarlo(self.start_player, self.state_manager, generator)
             while True:
-                # Do M rollouts
+                # Do rollouts for sim_time seconds/ rollouts_per_move rollouts
                 MC.search(sim_time=sim_time, simulations=rollouts_per_move)
                 distribution = MC.get_move_distribution()
                 self.replay_buffer.append((board, distribution))
@@ -40,7 +40,7 @@ class Trainer:
                 if winner != 0:
                     break
             # lock before accessing shared actor
-            self.actor.train_network(self.replay_buffer, batch_size=batch_size)
+            self.actor.train_network_random_minibatch(self.replay_buffer, batch_size=batch_size)
 
             if i in snapshots:
                 self.actor.save(self.name + str(i))

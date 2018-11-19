@@ -9,8 +9,8 @@ class BasicClientActor(BasicClientActorAbs):
         self.series_id = -1
         BasicClientActorAbs.__init__(self, IP_address, verbose=verbose)
         self.s_m = state_manager_hex.state_manager_hex(5, 1)
-        self.actor = actors.NeuralNet(self.s_m, epsilon=0)
-        self.actor.load("120")
+        self.actor = actors.NeuralNet(self.s_m)
+        self.actor.load("adam_random_2_400")
 
     def handle_get_action(self, state):
         """
@@ -25,7 +25,7 @@ class BasicClientActor(BasicClientActorAbs):
         player = state[0]
         mod_state = []
         for cell in state[1:]:
-            if self.starting_player == 2 and cell != 0:
+            if self.starting_player != 1 and cell != 0:
                 cell = 1 if cell == 2 else 2
             if cell == 1:
                 mod_state.append((1, 0))
@@ -34,10 +34,10 @@ class BasicClientActor(BasicClientActorAbs):
             else:
                 mod_state.append((0, 0))
 
-        if self.starting_player != self.series_id and mod_state.count((0, 0)) > 21:
-            next_move = random.choice(self.s_m.get_child_state_keys((player, mod_state))[1])
-        else:
-            next_move = self.actor.get_state((player, mod_state), best_move=True)[1]
+        # if self.starting_player != self.series_id and mod_state.count((0, 0)) > 21:
+        #    next_move = random.choice(self.s_m.get_child_state_keys((player, mod_state))[1])
+        # else:
+        next_move = self.actor.get_state((player, mod_state), best_move=True)[1]
         r = next_move // self.s_m.size
         c = next_move % self.s_m.size
         return (r, c)
@@ -91,9 +91,10 @@ class BasicClientActor(BasicClientActorAbs):
         #
         #
         ##############################
-        print("Game over, these are the stats:")
-        print('Winner: ' + str(winner))
-        print('End state: ' + str(end_state))
+        if self.verbose:
+            print("Game over, these are the stats:")
+            print('Winner: ' + str(winner))
+            print('End state: ' + str(end_state))
 
     def handle_series_over(self, stats):
         """
@@ -147,5 +148,5 @@ class BasicClientActor(BasicClientActorAbs):
 
 
 if __name__ == '__main__':
-    bsa = BasicClientActor(verbose=True)
+    bsa = BasicClientActor(verbose=False)
     bsa.connect_to_server()
