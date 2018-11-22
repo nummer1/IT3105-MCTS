@@ -1,11 +1,12 @@
 import random
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
+from tensorflow.keras import optimizers
 from tensorflow.keras.models import load_model
 
 
-# PATH = "/home/kasparov/Documents/IT3105-MCTS/"
-PATH = "D:\\User\\Misc\\IT3105-MCTS\\"
+PATH = "/home/kasparov/Documents/IT3105-MCTS/"
+# PATH = "D:\\User\\Misc\\IT3105-MCTS\\"
 
 
 class Random:
@@ -25,7 +26,7 @@ class NeuralNet:
         self.epsilon = epsilon
         self.model = None
 
-    def create_dense_network(self, size, afunc, optimizer):
+    def create_dense_network(self, size, afunc, optimizer_real, learning_rate, use_default_lr=True):
         node_number = self.state_manager.size**2
         self.model = Sequential()
         for i, s in enumerate(size):
@@ -38,7 +39,12 @@ class NeuralNet:
             self.model.add(Dense(node_number, activation='softmax', input_shape=([node_number * 3])))
         else:
             self.model.add(Dense(node_number, activation='softmax'))
-        self.model.compile(optimizer=optimizer, loss='mean_squared_error')
+        if not use_default_lr:
+            index = ['sgd', 'rmsprop', 'adagrad', 'adam'].index(optimizer_real)
+            opt = [optimizers.SGD, optimizers.RMSprop, optimizers.Adagrad, optimizers.Adam][index](lr=learning_rate)
+        else:
+            opt = optimizer_real
+        self.model.compile(optimizer=opt, loss='mean_squared_error')
         self.model.summary()
 
     def train_network_random_minibatch(self, replay_buffer, batch_size=128, epochs=1):

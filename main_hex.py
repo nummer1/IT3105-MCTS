@@ -9,28 +9,31 @@ import re
 
 
 # SAVE PARAMETERS
-network_name = "test_sgd_"  # will match nest with 'name' + number against each other
+network_name = "test_"  # will match nest with 'name' + number against each other
 
 # TRAINING PARAMETERS
 TRAIN_NETS = True
 net_size = [50]
 activation_function = ['sigmoid', 'tanh', 'relu'][2]
-optimizer = ['adagrad', 'sgd', 'rmsprop', 'adam'][1]
+optimizer = ['sgd', 'rmsprop', 'adagrad', 'adam'][3]
 batch_size = 128  # batch size during training
-epsilon = 0.1  # probability of doing random move
-episodes = 600  # number episodes to generate
+epsilon = 0.05  # probability of doing random move
+use_default_lr = True  # use keras default learning rate for optimizer
+learning_rate = 0.01  # use this learning rate if use_default_leraning_rate is False
+episodes = 2  # number episodes to generate
 # Imprtant: if snap_number must divide episodes in equal sequences
-snap_number = 9  # number of snapshots, must be 2 or larger
-buffer_size = 5000  # size of replay buffer
+snap_number = 2  # number of snapshots, must be 2 or larger
+buffer_size = 100  # size of replay buffer
 snapshots = [i for i in range(0, episodes+1, episodes//(snap_number-1))]
 
+# Don't use
 train_on_random = False
 sim_time_in_random = 1
 random_episodes = 200
 
 # MCTS PARAMETERS
 rollouts_per_move = 200  # number of rollouts
-sim_time = 10  # time to do rollout per move. if not 0, use instead of rollouts_per_move
+sim_time = 0.1  # time to do rollout per move. if not 0, use instead of rollouts_per_move
 
 # GAME PARAMETERS
 verbose = False
@@ -46,7 +49,7 @@ s_m = state_manager_hex.state_manager_hex(board_size, start_player)
 if TRAIN_NETS:
     random_actor = actors.Random(s_m)
     ann = actors.NeuralNet(s_m, epsilon=epsilon)
-    ann.create_dense_network(net_size, activation_function, optimizer)
+    ann.create_dense_network(net_size, activation_function, optimizer, learning_rate, use_default_lr)
     replay_buffer = deque(maxlen=buffer_size)
     generator = trainer.Trainer(start_player, s_m, ann, replay_buffer, verbose, network_name)
     if train_on_random:

@@ -34,6 +34,7 @@ class Trainer:
                 if self.verbose:
                     self.state_manager.print_move(move)
                     self.state_manager.print_board(board)
+                    print()
                 # set new root
                 MC.purge_tree(board)
 
